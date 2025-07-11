@@ -133,7 +133,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-                "S3Key": "serverless/ocr-envelope-processor/dev/1752108744462-2025-07-10T00:52:24.462Z/ocr.zip"
+                "S3Key": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z/ocr.zip"
               },
               "Handler": "ocr_lambda.ocr_lambda.lambda_handler",
               "Runtime": "python3.11",
@@ -157,14 +157,14 @@
               "OcrLogGroup"
             ]
           },
-          "OcrLambdaVersionoivCOkpyyT5kVnF47D8vfNogRhQNVYduQ76LOeg49Q": {
+          "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "OcrLambdaFunction"
               },
-              "CodeSha256": "kvNwPmPFM4I/R6wFghmMCrPQso1ooJHB+ae322WJRbg="
+              "CodeSha256": "1shGdVjVDgOkJpSmN63RCwEn0nA1kJ8vxAul6xqwUeI="
             }
           },
           "ApiGatewayRestApi": {
@@ -288,7 +288,7 @@
               "OcrLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1752108720359": {
+          "ApiGatewayDeployment1752122937311": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -349,7 +349,7 @@
           "OcrLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "OcrLambdaVersionoivCOkpyyT5kVnF47D8vfNogRhQNVYduQ76LOeg49Q"
+              "Ref": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
             },
             "Export": {
               "Name": "sls-ocr-envelope-processor-dev-OcrLambdaFunctionQualifiedArn"
@@ -439,7 +439,7 @@
         "timeout": 30,
         "runtime": "python3.11",
         "vpc": {},
-        "versionLogicalId": "OcrLambdaVersionoivCOkpyyT5kVnF47D8vfNogRhQNVYduQ76LOeg49Q"
+        "versionLogicalId": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
       }
     },
     "configValidationMode": "warn",
@@ -462,7 +462,7 @@
         ],
         "artifactsS3KeyDirname": "serverless/ocr-envelope-processor/dev/code-artifacts",
         "deploymentBucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-        "artifactDirectoryName": "serverless/ocr-envelope-processor/dev/1752108744462-2025-07-10T00:52:24.462Z"
+        "artifactDirectoryName": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z"
       },
       "plugins": {
         "$ref": "$[\"service\"][\"plugins\"]"
@@ -477,7 +477,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/ocr-envelope-processor/dev/1752108744462-2025-07-10T00:52:24.462Z",
+    "artifactDirectoryName": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z",
     "artifact": ""
   }
 }
