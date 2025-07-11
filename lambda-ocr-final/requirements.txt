@@ -1,0 +1,7 @@
+requests
+
+pytesseract
+Pillow
+openpyxl
+pdf2image==1.16.3
+boto3
