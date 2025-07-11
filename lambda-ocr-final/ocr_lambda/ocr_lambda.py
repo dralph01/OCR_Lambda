@@ -15,7 +15,7 @@ import logging
 # === CONFIG ===
 ADDRESS_REGION_1 = (750, 760, 919, 260)
 ADDRESS_REGION_2 = (750, 2035, 919, 265)
-BUCKET_NAME = 'ocr-envelopes'
+BUCKET_NAME = os.environ['BUCKET_NAME']
 S3_KEY_PREFIX = 'ocr-results/'
 MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 

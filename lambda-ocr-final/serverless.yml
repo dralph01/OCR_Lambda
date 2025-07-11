@@ -3,11 +3,15 @@ service: ocr-envelope-processor
 provider:
   name: aws
   runtime: python3.11
+  stage: ${opt:stage, 'dev'}    # Accept --stage prod, fallback to dev
   architecture: arm64
-  region: us-east-1   # ✅ updated to match your Lambda layer
+  region: us-east-1
   timeout: 30
   memorySize: 512
-  stackName: ocr-envelope-processor-stack
+
+  environment:
+    STAGE: ${opt:stage, 'dev'}
+    BUCKET_NAME: ${self:custom.bucketName}
 
   iam:
     role:
@@ -18,8 +22,8 @@ provider:
             - s3:PutObject
             - s3:ListBucket
           Resource:
-            - arn:aws:s3:::ocr-envelopes
-            - arn:aws:s3:::ocr-envelopes/*
+            - arn:aws:s3:::ocr-envelopes-${opt:stage, 'dev'}
+            - arn:aws:s3:::ocr-envelopes-${opt:stage, 'dev'}/*
 
   apiGateway:
     binaryMediaTypes:
@@ -29,13 +33,14 @@ functions:
   ocr:
     handler: ocr_lambda.ocr_lambda.lambda_handler
     architecture: arm64
+    timeout: 29  # Prevent API Gateway timeout conflict
     events:
       - http:
           path: ocr
           method: post
           cors: true
     layers:
-      - arn:aws:lambda:us-east-1:211302765842:layer:poppler-layer-arm64:1  # ✅ exact ARN you created
+      - arn:aws:lambda:us-east-1:211302765842:layer:poppler-layer-arm64:1
 
 package:
   individually: true
@@ -54,3 +59,6 @@ custom:
     slim: true
     useDownloadCache: false
     useStaticCache: false
+    platform: linux/arm64
+
+  bucketName: ocr-envelopes-${opt:stage, 'dev'}  # Stage-specific bucket

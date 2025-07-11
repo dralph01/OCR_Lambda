@@ -8,11 +8,15 @@
       "provider": {
         "name": "aws",
         "runtime": "python3.11",
+        "stage": "prod",
         "architecture": "arm64",
         "region": "us-east-1",
         "timeout": 30,
         "memorySize": 512,
-        "stackName": "ocr-envelope-processor-stack",
+        "environment": {
+          "STAGE": "prod",
+          "BUCKET_NAME": "ocr-envelopes-prod"
+        },
         "iam": {
           "role": {
             "statements": [
@@ -24,8 +28,8 @@
                   "s3:ListBucket"
                 ],
                 "Resource": [
-                  "arn:aws:s3:::ocr-envelopes",
-                  "arn:aws:s3:::ocr-envelopes/*"
+                  "arn:aws:s3:::ocr-envelopes-prod",
+                  "arn:aws:s3:::ocr-envelopes-prod/*"
                 ]
               }
             ]
@@ -36,7 +40,6 @@
             "*/*"
           ]
         },
-        "stage": "dev",
         "versionFunctions": true,
         "compiledCloudFormationTemplate": {
           "AWSTemplateFormatVersion": "2010-09-09",
@@ -45,7 +48,7 @@
             "OcrLogGroup": {
               "Type": "AWS::Logs::LogGroup",
               "Properties": {
-                "LogGroupName": "/aws/lambda/ocr-envelope-processor-dev-ocr"
+                "LogGroupName": "/aws/lambda/ocr-envelope-processor-prod-ocr"
               }
             },
             "IamRoleLambdaExecution": {
@@ -74,7 +77,7 @@
                         "-",
                         [
                           "ocr-envelope-processor",
-                          "dev",
+                          "prod",
                           "lambda"
                         ]
                       ]
@@ -91,7 +94,7 @@
                           ],
                           "Resource": [
                             {
-                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*"
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*"
                             }
                           ]
                         },
@@ -102,7 +105,7 @@
                           ],
                           "Resource": [
                             {
-                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*:*"
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*:*"
                             }
                           ]
                         },
@@ -114,8 +117,8 @@
                             "s3:ListBucket"
                           ],
                           "Resource": [
-                            "arn:aws:s3:::ocr-envelopes",
-                            "arn:aws:s3:::ocr-envelopes/*"
+                            "arn:aws:s3:::ocr-envelopes-prod",
+                            "arn:aws:s3:::ocr-envelopes-prod/*"
                           ]
                         }
                       ]
@@ -128,7 +131,7 @@
                     "-",
                     [
                       "ocr-envelope-processor",
-                      "dev",
+                      "prod",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -143,16 +146,22 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-                  "S3Key": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z/ocr.zip"
+                  "S3Key": "serverless/ocr-envelope-processor/prod/1752272255301-2025-07-11T22:17:35.301Z/ocr.zip"
                 },
                 "Handler": "ocr_lambda.ocr_lambda.lambda_handler",
                 "Runtime": "python3.11",
-                "FunctionName": "ocr-envelope-processor-dev-ocr",
+                "FunctionName": "ocr-envelope-processor-prod-ocr",
                 "MemorySize": 512,
-                "Timeout": 30,
+                "Timeout": 29,
                 "Architectures": [
                   "arm64"
                 ],
+                "Environment": {
+                  "Variables": {
+                    "STAGE": "prod",
+                    "BUCKET_NAME": "ocr-envelopes-prod"
+                  }
+                },
                 "Role": {
                   "Fn::GetAtt": [
                     "IamRoleLambdaExecution",
@@ -167,20 +176,20 @@
                 "OcrLogGroup"
               ]
             },
-            "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys": {
+            "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "OcrLambdaFunction"
                 },
-                "CodeSha256": "1shGdVjVDgOkJpSmN63RCwEn0nA1kJ8vxAul6xqwUeI="
+                "CodeSha256": "umHvFOv7SgN0sYO6Cq+17SuvuQefu6blxtO/Rmc9NEk="
               }
             },
             "ApiGatewayRestApi": {
               "Type": "AWS::ApiGateway::RestApi",
               "Properties": {
-                "Name": "dev-ocr-envelope-processor",
+                "Name": "prod-ocr-envelope-processor",
                 "BinaryMediaTypes": [
                   "*/*"
                 ],
@@ -298,13 +307,13 @@
                 "OcrLambdaPermissionApiGateway"
               ]
             },
-            "ApiGatewayDeployment1752122937311": {
+            "ApiGatewayDeployment1752272231472": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
                 "RestApiId": {
                   "Ref": "ApiGatewayRestApi"
                 },
-                "StageName": "dev"
+                "StageName": "prod"
               },
               "DependsOn": [
                 "ApiGatewayMethodOcrOptions",
@@ -353,16 +362,16 @@
             "ServerlessDeploymentBucketName": {
               "Value": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
               "Export": {
-                "Name": "sls-ocr-envelope-processor-dev-ServerlessDeploymentBucketName"
+                "Name": "sls-ocr-envelope-processor-prod-ServerlessDeploymentBucketName"
               }
             },
             "OcrLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
+                "Ref": "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk"
               },
               "Export": {
-                "Name": "sls-ocr-envelope-processor-dev-OcrLambdaFunctionQualifiedArn"
+                "Name": "sls-ocr-envelope-processor-prod-OcrLambdaFunctionQualifiedArn"
               }
             },
             "ServiceEndpoint": {
@@ -383,12 +392,12 @@
                     {
                       "Ref": "AWS::URLSuffix"
                     },
-                    "/dev"
+                    "/prod"
                   ]
                 ]
               },
               "Export": {
-                "Name": "sls-ocr-envelope-processor-dev-ServiceEndpoint"
+                "Name": "sls-ocr-envelope-processor-prod-ServiceEndpoint"
               }
             }
           }
@@ -399,6 +408,7 @@
         "ocr": {
           "handler": "ocr_lambda.ocr_lambda.lambda_handler",
           "architecture": "arm64",
+          "timeout": 29,
           "events": [
             {
               "http": {
@@ -428,16 +438,15 @@
           "layers": [
             "arn:aws:lambda:us-east-1:211302765842:layer:poppler-layer-arm64:1"
           ],
-          "name": "ocr-envelope-processor-dev-ocr",
+          "name": "ocr-envelope-processor-prod-ocr",
           "module": ".",
           "package": {
             "artifact": ".serverless/ocr.zip"
           },
           "memory": 512,
-          "timeout": 30,
           "runtime": "python3.11",
           "vpc": {},
-          "versionLogicalId": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
+          "versionLogicalId": "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk"
         }
       },
       "package": {
@@ -448,9 +457,9 @@
           "node_modules/**",
           ".venv/**"
         ],
-        "artifactsS3KeyDirname": "serverless/ocr-envelope-processor/dev/code-artifacts",
+        "artifactsS3KeyDirname": "serverless/ocr-envelope-processor/prod/code-artifacts",
         "deploymentBucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-        "artifactDirectoryName": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z"
+        "artifactDirectoryName": "serverless/ocr-envelope-processor/prod/1752272255301-2025-07-11T22:17:35.301Z"
       },
       "plugins": [
         "serverless-python-requirements"
@@ -460,18 +469,24 @@
           "dockerizePip": true,
           "slim": true,
           "useDownloadCache": false,
-          "useStaticCache": false
-        }
+          "useStaticCache": false,
+          "platform": "linux/arm64"
+        },
+        "bucketName": "ocr-envelopes-prod"
       }
     },
     "provider": {
       "name": "aws",
       "runtime": "python3.11",
+      "stage": "prod",
       "architecture": "arm64",
       "region": "us-east-1",
       "timeout": 30,
       "memorySize": 512,
-      "stackName": "ocr-envelope-processor-stack",
+      "environment": {
+        "STAGE": "prod",
+        "BUCKET_NAME": "ocr-envelopes-prod"
+      },
       "iam": {
         "role": {
           "statements": [
@@ -483,8 +498,8 @@
                 "s3:ListBucket"
               ],
               "Resource": [
-                "arn:aws:s3:::ocr-envelopes",
-                "arn:aws:s3:::ocr-envelopes/*"
+                "arn:aws:s3:::ocr-envelopes-prod",
+                "arn:aws:s3:::ocr-envelopes-prod/*"
               ]
             }
           ]
@@ -495,7 +510,6 @@
           "*/*"
         ]
       },
-      "stage": "dev",
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -504,7 +518,7 @@
           "OcrLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/ocr-envelope-processor-dev-ocr"
+              "LogGroupName": "/aws/lambda/ocr-envelope-processor-prod-ocr"
             }
           },
           "IamRoleLambdaExecution": {
@@ -533,7 +547,7 @@
                       "-",
                       [
                         "ocr-envelope-processor",
-                        "dev",
+                        "prod",
                         "lambda"
                       ]
                     ]
@@ -550,7 +564,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*"
                           }
                         ]
                       },
@@ -561,7 +575,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*:*"
                           }
                         ]
                       },
@@ -573,8 +587,8 @@
                           "s3:ListBucket"
                         ],
                         "Resource": [
-                          "arn:aws:s3:::ocr-envelopes",
-                          "arn:aws:s3:::ocr-envelopes/*"
+                          "arn:aws:s3:::ocr-envelopes-prod",
+                          "arn:aws:s3:::ocr-envelopes-prod/*"
                         ]
                       }
                     ]
@@ -587,7 +601,7 @@
                   "-",
                   [
                     "ocr-envelope-processor",
-                    "dev",
+                    "prod",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -602,16 +616,22 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-                "S3Key": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z/ocr.zip"
+                "S3Key": "serverless/ocr-envelope-processor/prod/1752272255301-2025-07-11T22:17:35.301Z/ocr.zip"
               },
               "Handler": "ocr_lambda.ocr_lambda.lambda_handler",
               "Runtime": "python3.11",
-              "FunctionName": "ocr-envelope-processor-dev-ocr",
+              "FunctionName": "ocr-envelope-processor-prod-ocr",
               "MemorySize": 512,
-              "Timeout": 30,
+              "Timeout": 29,
               "Architectures": [
                 "arm64"
               ],
+              "Environment": {
+                "Variables": {
+                  "STAGE": "prod",
+                  "BUCKET_NAME": "ocr-envelopes-prod"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -626,20 +646,20 @@
               "OcrLogGroup"
             ]
           },
-          "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys": {
+          "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "OcrLambdaFunction"
               },
-              "CodeSha256": "1shGdVjVDgOkJpSmN63RCwEn0nA1kJ8vxAul6xqwUeI="
+              "CodeSha256": "umHvFOv7SgN0sYO6Cq+17SuvuQefu6blxtO/Rmc9NEk="
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-ocr-envelope-processor",
+              "Name": "prod-ocr-envelope-processor",
               "BinaryMediaTypes": [
                 "*/*"
               ],
@@ -757,13 +777,13 @@
               "OcrLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1752122937311": {
+          "ApiGatewayDeployment1752272231472": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               },
-              "StageName": "dev"
+              "StageName": "prod"
             },
             "DependsOn": [
               "ApiGatewayMethodOcrOptions",
@@ -812,16 +832,16 @@
           "ServerlessDeploymentBucketName": {
             "Value": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
             "Export": {
-              "Name": "sls-ocr-envelope-processor-dev-ServerlessDeploymentBucketName"
+              "Name": "sls-ocr-envelope-processor-prod-ServerlessDeploymentBucketName"
             }
           },
           "OcrLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
+              "Ref": "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk"
             },
             "Export": {
-              "Name": "sls-ocr-envelope-processor-dev-OcrLambdaFunctionQualifiedArn"
+              "Name": "sls-ocr-envelope-processor-prod-OcrLambdaFunctionQualifiedArn"
             }
           },
           "ServiceEndpoint": {
@@ -842,12 +862,12 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/dev"
+                  "/prod"
                 ]
               ]
             },
             "Export": {
-              "Name": "sls-ocr-envelope-processor-dev-ServiceEndpoint"
+              "Name": "sls-ocr-envelope-processor-prod-ServiceEndpoint"
             }
           }
         }
@@ -863,21 +883,42 @@
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "service: ocr-envelope-processor\n\nprovider:\n  name: aws\n  runtime: python3.11\n  architecture: arm64\n  region: us-east-1   # ✅ updated to match your Lambda layer\n  timeout: 30\n  memorySize: 512\n  stackName: ocr-envelope-processor-stack\n\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - s3:GetObject\n            - s3:PutObject\n            - s3:ListBucket\n          Resource:\n            - arn:aws:s3:::ocr-envelopes\n            - arn:aws:s3:::ocr-envelopes/*\n\n  apiGateway:\n    binaryMediaTypes:\n      - '*/*'\n\nfunctions:\n  ocr:\n    handler: ocr_lambda.ocr_lambda.lambda_handler\n    architecture: arm64\n    events:\n      - http:\n          path: ocr\n          method: post\n          cors: true\n    layers:\n      - arn:aws:lambda:us-east-1:211302765842:layer:poppler-layer-arm64:1  # ✅ exact ARN you created\n\npackage:\n  individually: true\n  exclude:\n    - __pycache__/**\n    - \"*.pyc\"\n    - node_modules/**\n    - .venv/**\n\nplugins:\n  - serverless-python-requirements\n\ncustom:\n  pythonRequirements:\n    dockerizePip: true\n    slim: true\n    useDownloadCache: false\n    useStaticCache: false\n",
+    "serviceRawFile": "service: ocr-envelope-processor\n\nprovider:\n  name: aws\n  runtime: python3.11\n  stage: ${opt:stage, 'dev'}    # Accept --stage prod, fallback to dev\n  architecture: arm64\n  region: us-east-1\n  timeout: 30\n  memorySize: 512\n\n  environment:\n    STAGE: ${opt:stage, 'dev'}\n    BUCKET_NAME: ${self:custom.bucketName}\n\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - s3:GetObject\n            - s3:PutObject\n            - s3:ListBucket\n          Resource:\n            - arn:aws:s3:::ocr-envelopes-${opt:stage, 'dev'}\n            - arn:aws:s3:::ocr-envelopes-${opt:stage, 'dev'}/*\n\n  apiGateway:\n    binaryMediaTypes:\n      - '*/*'\n\nfunctions:\n  ocr:\n    handler: ocr_lambda.ocr_lambda.lambda_handler\n    architecture: arm64\n    timeout: 29  # Prevent API Gateway timeout conflict\n    events:\n      - http:\n          path: ocr\n          method: post\n          cors: true\n    layers:\n      - arn:aws:lambda:us-east-1:211302765842:layer:poppler-layer-arm64:1\n\npackage:\n  individually: true\n  exclude:\n    - __pycache__/**\n    - \"*.pyc\"\n    - node_modules/**\n    - .venv/**\n\nplugins:\n  - serverless-python-requirements\n\ncustom:\n  pythonRequirements:\n    dockerizePip: true\n    slim: true\n    useDownloadCache: false\n    useStaticCache: false\n    platform: linux/arm64\n\n  bucketName: ocr-envelopes-${opt:stage, 'dev'}  # Stage-specific bucket\n",
     "command": [
       "deploy"
     ],
-    "options": {},
+    "options": {
+      "stage": "prod"
+    },
     "orgId": "d1ed66ae-b321-4bf1-9dcd-d53c0ddb0c4e",
     "orgName": "ihaus",
     "userId": "YlcRjvtcbL7QrhJW8s",
     "userName": "ihaus",
     "serviceProviderAwsAccountId": "211302765842",
-    "serviceProviderAwsCfStackId": null,
-    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackName": "ocr-envelope-processor-prod",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:211302765842:stack/ocr-envelope-processor-prod/0d558a90-5ea5-11f0-9082-12f4bb44a6b5",
+    "serviceProviderAwsCfStackCreated": "2025-07-11T22:19:03.623Z",
     "serviceProviderAwsCfStackUpdated": null,
-    "serviceProviderAwsCfStackStatus": null,
-    "serviceProviderAwsCfStackOutputs": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "OcrLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:211302765842:function:ocr-envelope-processor-prod-ocr:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-ocr-envelope-processor-prod-OcrLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://nwnt13rrb6.execute-api.us-east-1.amazonaws.com/prod",
+        "Description": "URL of the service endpoint",
+        "ExportName": "sls-ocr-envelope-processor-prod-ServiceEndpoint"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
+        "ExportName": "sls-ocr-envelope-processor-prod-ServerlessDeploymentBucketName"
+      }
+    ],
     "compiledCloudFormationTemplate": {
       "AWSTemplateFormatVersion": "2010-09-09",
       "Description": "The AWS CloudFormation template for this Serverless application",
@@ -885,7 +926,7 @@
         "OcrLogGroup": {
           "Type": "AWS::Logs::LogGroup",
           "Properties": {
-            "LogGroupName": "/aws/lambda/ocr-envelope-processor-dev-ocr"
+            "LogGroupName": "/aws/lambda/ocr-envelope-processor-prod-ocr"
           }
         },
         "IamRoleLambdaExecution": {
@@ -914,7 +955,7 @@
                     "-",
                     [
                       "ocr-envelope-processor",
-                      "dev",
+                      "prod",
                       "lambda"
                     ]
                   ]
@@ -931,7 +972,7 @@
                       ],
                       "Resource": [
                         {
-                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*"
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*"
                         }
                       ]
                     },
@@ -942,7 +983,7 @@
                       ],
                       "Resource": [
                         {
-                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-dev*:*:*"
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/ocr-envelope-processor-prod*:*:*"
                         }
                       ]
                     },
@@ -954,8 +995,8 @@
                         "s3:ListBucket"
                       ],
                       "Resource": [
-                        "arn:aws:s3:::ocr-envelopes",
-                        "arn:aws:s3:::ocr-envelopes/*"
+                        "arn:aws:s3:::ocr-envelopes-prod",
+                        "arn:aws:s3:::ocr-envelopes-prod/*"
                       ]
                     }
                   ]
@@ -968,7 +1009,7 @@
                 "-",
                 [
                   "ocr-envelope-processor",
-                  "dev",
+                  "prod",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -983,16 +1024,22 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
-              "S3Key": "serverless/ocr-envelope-processor/dev/1752122960281-2025-07-10T04:49:20.281Z/ocr.zip"
+              "S3Key": "serverless/ocr-envelope-processor/prod/1752272255301-2025-07-11T22:17:35.301Z/ocr.zip"
             },
             "Handler": "ocr_lambda.ocr_lambda.lambda_handler",
             "Runtime": "python3.11",
-            "FunctionName": "ocr-envelope-processor-dev-ocr",
+            "FunctionName": "ocr-envelope-processor-prod-ocr",
             "MemorySize": 512,
-            "Timeout": 30,
+            "Timeout": 29,
             "Architectures": [
               "arm64"
             ],
+            "Environment": {
+              "Variables": {
+                "STAGE": "prod",
+                "BUCKET_NAME": "ocr-envelopes-prod"
+              }
+            },
             "Role": {
               "Fn::GetAtt": [
                 "IamRoleLambdaExecution",
@@ -1007,20 +1054,20 @@
             "OcrLogGroup"
           ]
         },
-        "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys": {
+        "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "OcrLambdaFunction"
             },
-            "CodeSha256": "1shGdVjVDgOkJpSmN63RCwEn0nA1kJ8vxAul6xqwUeI="
+            "CodeSha256": "umHvFOv7SgN0sYO6Cq+17SuvuQefu6blxtO/Rmc9NEk="
           }
         },
         "ApiGatewayRestApi": {
           "Type": "AWS::ApiGateway::RestApi",
           "Properties": {
-            "Name": "dev-ocr-envelope-processor",
+            "Name": "prod-ocr-envelope-processor",
             "BinaryMediaTypes": [
               "*/*"
             ],
@@ -1138,13 +1185,13 @@
             "OcrLambdaPermissionApiGateway"
           ]
         },
-        "ApiGatewayDeployment1752122937311": {
+        "ApiGatewayDeployment1752272231472": {
           "Type": "AWS::ApiGateway::Deployment",
           "Properties": {
             "RestApiId": {
               "Ref": "ApiGatewayRestApi"
             },
-            "StageName": "dev"
+            "StageName": "prod"
           },
           "DependsOn": [
             "ApiGatewayMethodOcrOptions",
@@ -1193,16 +1240,16 @@
         "ServerlessDeploymentBucketName": {
           "Value": "serverless-framework-deployments-us-east-1-9468b86a-ba07",
           "Export": {
-            "Name": "sls-ocr-envelope-processor-dev-ServerlessDeploymentBucketName"
+            "Name": "sls-ocr-envelope-processor-prod-ServerlessDeploymentBucketName"
           }
         },
         "OcrLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "OcrLambdaVersionOXVAxQ89GxjrxfRUfasOHsilXW7LVbUSLMKJ9NA3Oys"
+            "Ref": "OcrLambdaVersiondnpRI0yYyMuV5ZIrhOldn3f23jYAVr2yzj8AWVKtk"
           },
           "Export": {
-            "Name": "sls-ocr-envelope-processor-dev-OcrLambdaFunctionQualifiedArn"
+            "Name": "sls-ocr-envelope-processor-prod-OcrLambdaFunctionQualifiedArn"
           }
         },
         "ServiceEndpoint": {
@@ -1223,12 +1270,12 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/dev"
+                "/prod"
               ]
             ]
           },
           "Export": {
-            "Name": "sls-ocr-envelope-processor-dev-ServiceEndpoint"
+            "Name": "sls-ocr-envelope-processor-prod-ServiceEndpoint"
           }
         }
       }
