@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: AWS_Credentials
+- group: AWS_Credentials   # 👈 This must match your variable group name exactly
 
 steps:
 - task: UsePythonVersion@0
