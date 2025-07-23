@@ -1,6 +1,9 @@
-# Triggers on push to dev
-# Deploys with --stage dev
-# Already provided earlier
+name: Deploy OCR Lambda to Dev
+
+on:
+  push:
+    branches:
+      - dev
 
 jobs:
   deploy:
