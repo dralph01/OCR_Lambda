@@ -1,6 +1,9 @@
-# Triggers on push to main
-# Deploys with --stage prod
-# Already provided earlier
+name: Deploy OCR Lambda to Prod
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
