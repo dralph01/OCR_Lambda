@@ -22,7 +22,7 @@ steps:
 
 - script: |
     cd lambda-ocr-final
-    npm install -g serverless
+    npm install -g serverless@3
     serverless deploy
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
