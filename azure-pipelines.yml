@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: AWS_Credentials   # 👈 This must match your variable group name exactly
+- group: AWS_Credentials
 
 steps:
 - task: UsePythonVersion@0
@@ -15,11 +15,13 @@ steps:
     versionSpec: '3.11'
 
 - script: |
+    cd lambda-ocr-final
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
 - script: |
+    cd lambda-ocr-final
     npm install -g serverless
     serverless deploy
   env:
