@@ -1,0 +1,46 @@
+name: Deploy OCR Lambda to AWS
+
+on:
+  push:
+    branches:
+      - main  # Or your desired deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Ensure clean Serverless build
+        run: |
+          if [ -d ".serverless" ]; then
+            echo "Cleaning up .serverless folder..."
+            rm -rf .serverless
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Update if needed
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy with Serverless
+        env:
+          STAGE: prod
+        run: |
+          sls deploy --stage $STAGE
