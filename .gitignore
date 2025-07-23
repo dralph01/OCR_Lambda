@@ -1,0 +1,35 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+
+# Virtual environments
+env/
+venv/
+ENV/
+*.venv/
+
+# Python and system logs
+*.log
+
+# Serverless build output
+.serverless/
+.sls/
+
+# IDE / editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Unit test cache
+.pytest_cache/
+
+# Excel temp files
+~$*
+
+# Optional: exclude Excel outputs if generated during tests
+*.xlsx
